@@ -1,0 +1,565 @@
+﻿<!DOCTYPE>
+<html>
+	<head>
+		<meta charset='UTF-8'/>
+		<title>Vk bot</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width">
+		<script type='text/javascript' src='/jquery.js'></script>
+		<script type='text/javascript' src='/script.js'></script>
+		<script type='text/javascript' src='/eel.js'></script>
+		<link rel='icon' type='image/png' href='img/favicon.png'>
+	</head>
+	<body class='body'>
+		<div class='block'><img id='vk_logo' width='130px' height='100px' src='img/vk_logo.jpg'><h3 id='vk_bot'> bot</h3></div>
+        <div class='blue'><p class='alert'>Создай своего чат-бота для вконтакте.</p></div>
+		<form class='block_2'>
+			<!--<br><label class='text1'>Token</label>-->
+			<br><br><input type='text' name='token' id='token' placeholder="Токен вашей группы">
+			<br><a target='_blank' href='https://vk.com/faq11764'>Что такое токен?</a>
+			<br><br><input type='button' class='button' id='elem' value="Добавить варианты">
+            <a href='#'><input type='button' class='button' id='dialogflow' value='DialogFlow'></a>
+            <div class='vil' id='Hello'>
+                <div class='Hello'>
+                    <div class='overflow_block'>
+                        <a title='Добавить варианты' href='#' id='plus'><img src='img/plus.png' width='20px' height='20px'></a>
+                        <a title='Удалить варианты по очереди' href='#' id='minus'><img src='img/trash.png' width='20px' height='20px'></a>
+                        <a href='#' title='Сохранить' id='save'><img src='img/save.png' width='20px' height='20px'></a>
+                        <br><input type='text' name='answer' id='answer' class='input_2' placeholder='else'>
+                    </div>
+                </div>
+            </div>
+            <div class='none' id='dialog_block'>
+                <div class='dialogflowoverflow'>
+                    <a href='#' title='Сохранить' id='save1'><img src='img/save.png' width='20px' height='20px'></a>
+                    <a href='#' title='Сохранить' id='ru'>Ru</a>
+                    <a href='#' title='Сохранить' id='en'>En</a>
+                    <input type='text' id='dialogflowttoken' placeholder='Клиентский токен DialogFlow' class='input_2'><br><br>
+                    <input type='text' id='nothing' placeholder='else' class='input_2'><br>
+                    <a target='_blank' href='https://habr.com/ru/post/502688/'>Что такое DialogFlow?</a><br>
+                </div>
+            </div>
+            <div class='prev'>
+                <br><br><input type='submit' class='button' id='creat' value='Создать'>
+                <input type='button' class='button' value='Открыть проект' id='open_project'>
+                <input type="button" id="new_project" value="Новый проект" class="button tog_1">
+            </div>
+            <div id='Hello_1' class='vil_1'>
+                <br><input type='button' class='start' id='start' value='старт' name='start'>
+                <input type='button' class='stop' id='stop' value='остановить' name='stop'>
+                <input type='button' class='delete' id='delete' value='удалить' name='delete'>
+            </div>
+            <br><div id='Hello_2' class='vil_1'>
+                <div class='photo_2'><a href="#" id="minus_1"><img src="img/trash.png" width="20px" height="20px"><br></a></div>
+                <div class='overflow_2'>
+                </div>
+            </div>
+		</form>
+        <script type='text/javascript'>
+            _id_ = []
+            m = 0
+            _id_div = []
+            div = 0
+            m_8 = 0
+            v = 0
+            _id_ask = []
+            $._id_ask1 = _id_ask
+            _id_ans = []
+            $._id_ans1 = _id_ans
+            i = 0
+            b = 0
+            i_1 = 0
+            i_2 = 0
+            m_3_id = []
+            id_ans = []
+            id_ask = []
+            json_cont = {}
+            status = false
+            lang = null
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            function creat(ask, ans, i, b, con_val, con_val1, json_cont){
+                if (con_val1 === 'else'){
+                    $('#answer').val(json_cont['else'])
+                } else if (con_val1 === 'status'){
+
+                } else if (con_val1 === 'token'){
+                    $('#token').val(json_cont['token'])
+                } else if (con_val1 === 'dialogtoken'){
+                    if (json_cont['dialogtoken'] === null){
+                    } else {
+                        $('#dialogflowttoken').val(json_cont['dialogtoken'])
+                    }
+                } else if (con_val1 === 'dialogelse'){
+                    if (json_cont['dialogelse'] === null){
+                    } else {
+                        $('#nothing').val(json_cont['dialogelse'])
+                    }
+                }
+                else{
+                    $('.overflow_block').append('<div id="'+ask+'"><br><input type="text" placeholder="Вопрос" class="input_2" id="'+'askq'+String(i)+'"></div>')
+                    $('#askq'+String(i)).val(con_val1)
+                    $('.overflow_block').append('<div id="'+ans+'"><br><input type="text" placeholder="Ответ" class="input_2" id="'+'ansq'+String(b)+'"></div>')
+                    $('#ansq'+String(b)).val(json_cont[con_val1])}
+                }
+            async function watch_json(name){
+                let val = await eel.open_read(name)()
+                return val
+            }
+            function watch (id_ask, id_ans, my, json_cont){
+                var massive=Object.keys(json_cont)
+                for (let i of massive){
+                    delete json_cont[i]
+                }
+                json_cont['else'] = $('#answer').val()
+                json_cont['status'] = status
+                json_cont['token'] = $('#token').val()
+                for (let j = 0; j < id_ask.length; j++) {
+                    json_cont[$('#'+id_ask[j]).val()] = $('#'+id_ans[j]).val()
+                }
+                try {
+                    delete json_cont['undefined']
+                } catch {}
+                var a = $('#token').val()
+                if (a === null){
+                } else{
+                    eel.creat_bot(a, my, json_cont)
+                }
+                //eel.alg(my, json_cont)
+            }
+
+
+            async  function getProject1() {
+                let name_1 = await eel.getProject1()()
+                console.log(name_1[name_1.length-1])
+                eel.rm_file(name_1)
+            }
+
+            async function getProject2(_id_, m, _id_div, div, m_8, v, i_1, i_2, m_3_id, json_cont){
+                //let value = await eel.getProject()()
+                let value = await eel.getProject()()
+                for (let count = 0; count < value.length; count++) {
+                    m++
+                    div++
+                    m_8++
+                    v = 0
+                    i_1 = 0
+                    var m_3 = value[value.length-1]+'b'
+                    var m_1 = 'prod'+String(m)
+                    var m_2 = 'prod_'+String(div)
+                    $('.overflow_2').append('<div id="'+m_2+'"'+'><div><a class="prod" id="'+m_1+'" href="#">'+value[count]+'</a></div></div>')
+                    $('body').append('<style type="text/css">'+'#'+m_2+':hover {background-color: #D1D1CC;}</style>')
+                    //$('body').append('<script type="text/javascript">'+'$(document).ready(function(){$("#'+m_1+'").on("click",function(){alert("FFF")}})'+'</'+'script>')
+                    $('.script').append('<script type="text/javascript">$(document).ready(function(){$("#'+m_1+'").on("click", function(){v=0;i_1=0;eel.stop();my=$("#'+m_1+'").text();console.log(my);$("#Hello").toggleClass("vil");$("#creat").val("Создать");$("#new_project").addClass("tog_1");$("#Hello_2").addClass("vil_1");$(".overflow_2").empty();var n = $("#Hello_1").attr("class");if (n === "vil_1"){}else{$("#Hello_1").addClass("vil_1")}})})'+'</'+'script>')
+                    $('.script').append('<script type="text/javascript">$(document).ready(function(){$("#'+m_1+'").on("click",function(){$("#dialog_block").addClass("none");$("#Hello_1").toggleClass("vil_1");$("#creat").toggleClass("tog");$("#open_project").toggleClass("tog");$("#nothing").val(null);$("#dialogflowttoken").val(null);})})</'+'script>')
+                    $('.script').append('<script type="text/javascript">'+'\n'+'$(document).ready(function(){$("#'+m_1+'").on("click", function(){'+'\n'+'try {'+'\n'+'delete json_cont["undefined"]'+'\n'+'}'+'\n'+'catch {}})})'+'\n'+'</'+'script>')
+                    $('.script').append('<script type="text/javascript">'+'\n'+'$(document).ready(function(){$("#'+m_1+'").on("click", function(){'+'\n'+'for (let io of id_ask){'+'\n'+'delete id_ask[io]'+'\n'+'delete json_cont[$("#"+io).val()]'+'\n'+'}})})'+'\n'+'</'+'script>')
+                    $('.script').append('<script type="text/javascript">'+'\n'+'$(document).ready(function(){$("#'+m_1+'").on("click", function(){'+'\n'+'for (let io of id_ans){'+'\n'+'delete id_ans[io]'+'\n'+'}})})'+'\n'+'</'+'script>')
+                    $('.script').append('<script type="text/javascript">'+'\n'+'$(document).ready(function(){$("#'+m_1+'").on("click", function(){'+'\n'+'for (let io of _id_ask){'+'\n'+'$("#"+io).remove()'+'\n'+'delete _id_ask[io]'+'\n'+'}})})'+'\n'+'</'+'script>')
+                    $('.script').append('<script type="text/javascript">'+'\n'+'$(document).ready(function(){$("#'+m_1+'").on("click", function(){'+'\n'+'for (let io of _id_ans){'+'\n'+'$("#"+io).remove()'+'\n'+'delete _id_ans[io]'+'\n'+'}})})'+'\n'+'</'+'script>')
+                    var res = watch_json($("#"+m_1).text())
+                    var df = await res.then(function(data){return data})
+                    $('.script').append('<script type="text/javascript">$(document).ready(function(){$("#'+m_1+'").on("click", function(){json_cont=null;json_cont='+df+';var massive=Object.keys(json_cont);for (let a = 0; a < massive.length; a++){i++;b++;var ask="ask"+String(i);var con_val=json_cont[massive[a]];var con_val1=massive[a];var ans="ans"+String(b);id_ask.push("askq"+String(i));id_ans.push("ansq"+String(b));_id_ask.push("ask"+ String(i));_id_ans.push("ans"+ String(b));creat(ask, ans, i, b, con_val, con_val1, json_cont);eel.stop()}})})</'+'script>')
+                    _id_.push(m_1)
+                    _id_div.push(m_2)
+                    m_3_id.push(m_3)
+                    i_2 += 1
+                }
+            }
+            $(document).ready(function(){
+                eel.status()
+                eel.install()
+                $('#elem').on('click',function(){
+                    if ($('#dialog_block').hasClass('none')) {
+                        $('#creat').toggleClass('tog')
+                        $('#open_project').toggleClass('tog')
+                        $('#Hello').toggleClass('vil')
+                    } else {
+                        $('#Hello').toggleClass('vil')
+                        $('#dialog_block').toggleClass('none')
+                    }
+                })
+                $('.block_2').on('submit',function(event){
+                    event.preventDefault()
+                    var c = $('#creat').val()
+                    if (c === '_____'){
+                        console.log('None')
+                    }else if(c === 'Сохранить'){
+
+                    }else{
+                        var a = $('#token').val()
+                        var b = prompt('Введите желаемое имя проекта.')
+                        if (b === null){
+                            alert('Вы не ввели имя файла.Создание чат-бота невозможно.')
+                        }
+                        else {
+                            try {
+                                delete json_cont['undefined']
+                            } catch {}
+                            for (let io of id_ask){
+                                delete id_ask[io]
+                                delete json_cont[$('#'+io).val()]
+                                console.log(json_cont)
+                            }
+                            for (let io of id_ans){
+                                delete id_ans[io]
+                            }
+                            for (let io of _id_ask){
+                                $('#'+io).remove()
+                                delete _id_ask[io]
+                                delete json_cont[$('#'+io).val()]
+                            }
+                            for (let io of _id_ans){
+                                $('#'+io).remove()
+                                delete _id_ans[io]
+                            }
+                            $('#answer').val('')
+                            my = b
+                            eel.my_python_method(a, b)
+                            eel.stop()
+                            $('#Hello_1').removeClass('vil_1')
+                            $('#new_project').removeClass('tog_1')
+                            $('#creat').toggleClass('tog')
+                            $('#open_project').toggleClass('tog')
+                            $('#Hello').toggleClass('vil')
+                            $('#nothing').val(null)
+                            $('#dialogflowttoken').val(null)
+                        }
+                    }
+                })
+                $('#start').on('click',function(){
+                    $('#start').removeClass('start')
+                    $('#start').addClass('grey')
+                    $('#stop').removeClass('grey')
+                    $('#stop').addClass('stop')
+                    eel.start(my)
+                })
+                $('#stop').on('click',function(){
+                    $('#start').removeClass('grey')
+                    $('#start').addClass('start')
+                    $('#stop').removeClass('stop')
+                    $('#stop').addClass('grey')
+                    eel.stop()
+                })
+                $('#plus').on('click', function(){
+                    i++
+                    b++
+                    _id_ask.push('ask'+ String(i))
+                    _id_ans.push('ans'+String(b))
+                    var ask = 'ask'+String(i)
+                    var ans = 'ans'+String(b)
+                    id_ask.push('askq'+ String(i))
+                    id_ans.push('ansq'+String(b))
+                    $('.overflow_block').append('<div id="'+ask+'"><br><input type="text" placeholder="Вопрос" class="input_2" id="'+'askq'+ String(i)+'"></div>')
+                    $('.overflow_block').append('<div id="'+ans+'"><br><input type="text" placeholder="Ответ" class="input_2" id="'+'ansq'+String(b)+'"></div>')
+                })
+                $('#minus').on('click', function(){
+                    var len_ask = _id_ask.length
+                    var len_ans = _id_ans.length
+                    console.log($('#'+id_ask[len_ask-1]).val())
+                    delete json_cont[$('#'+id_ask[len_ask-1]).val()]
+                    $('#'+_id_ask[len_ask-1]).remove()
+                    $('#'+_id_ans[len_ans-1]).remove()
+                    _id_ask.splice(len_ask-1, 1)
+                    _id_ans.splice(len_ans-1, 1)
+                    id_ask.splice(len_ask-1, 1)
+                    id_ans.splice(len_ans-1, 1)
+                    var h_w = $( ".overflow_block" ).height()
+                    $( ".overflow_block" ).height(h_w-98)
+                    i -= 1
+                    b -= 1
+                })
+                $('#save').on('click', function(){
+                    watch (id_ask, id_ans, my, json_cont)
+                    status = false
+                })
+                $('#open_project').on('click', function(){
+                    v++
+                    if (v === 1){
+                        $('#creat').val('_____')
+                        $('#Hello_1').addClass('vil_1')
+                        $('#new_project').removeClass('tog_1')
+                        $('#Hello_2').removeClass('vil_1')
+                        $('#start').removeClass('grey')
+                        $('#stop').removeClass('grey')
+                        $('#stop').addClass('stop')
+                        $('#start').addClass('start')
+                        getProject2 (_id_, m, _id_div, div, m_8, v, i_1, i_2, m_3_id, json_cont)
+                    }else {}
+                })
+                $('#new_project').on('click', function(){
+                    v = 0
+                    i_1 = 0
+                    $('#creat').val('Создать')
+                    $('#new_project').addClass('tog_1')
+                    $('#Hello_2').addClass('vil_1')
+                    $('.overflow_2').empty()
+                    $('#start').removeClass('grey')
+                    $('#stop').removeClass('grey')
+                    $('#stop').addClass('stop')
+                    $('#start').addClass('start')
+                    var n = $('#Hello_1').attr('class')
+                    if (n === 'vil_1'){
+
+                    }else {
+                        $('#Hello_1').toggleClass('vil_1')
+                    }
+                })
+                $('#minus_1').on('click', function(){
+                    getProject1()
+                    eel.clean_txt()
+                })
+                $('#delete').on('click', function(){
+                    eel.rm_text(my)
+                })
+                $('#dialogflow').on('click', function(){
+                    if ($('#Hello').hasClass('vil')) {
+                        $('#dialog_block').toggleClass('none')
+                        $('#creat').toggleClass('tog')
+                        $('#open_project').toggleClass('tog')
+                    } else {
+                        $('#Hello').toggleClass('vil')
+                        $('#dialog_block').toggleClass('none')
+                    }
+                })
+                $('#save1').on('click', function(){
+                    status = true
+                    const tokenvk = $('#token').val()
+                    const dialogtoken = $('#dialogflowttoken').val()
+                    const inak = $('#nothing').val()
+                    if (dialogtoken.length > 5 && tokenvk.length > 5) {
+                        if (lang === 'ru'){
+                            json_cont['status'] = status
+                            json_cont['token'] = $('#token').val()
+                            json_cont['dialogtoken'] = $('#dialogflowttoken').val()
+                            json_cont['dialogelse'] = $('#nothing').val()
+                            eel.creat_dialogdir(json_cont, my)
+                            eel.creat_dialogflow(tokenvk, dialogtoken, 'ru', inak, my, status)
+                        } else if (lang === 'en') {
+                            json_cont['status'] = status
+                            json_cont['token'] = $('#token').val()
+                            json_cont['dialogtoken'] = $('#dialogflowttoken').val()
+                            json_cont['dialogelse'] = $('#nothing').val()
+                            eel.creat_dialogdir(json_cont, my)
+                            eel.creat_dialogflow(tokenvk, dialogtoken, 'en', inak, my, status)
+                        } else {
+                            json_cont['status'] = status
+                            json_cont['token'] = $('#token').val()
+                            json_cont['dialogtoken'] = $('#dialogflowttoken').val()
+                            json_cont['dialogelse'] = $('#nothing').val()
+                            eel.creat_dialogdir(json_cont, my)
+                            eel.creat_dialogflow(tokenvk, dialogtoken, 'ru', inak, my, status)
+                    }} else {
+                        alert('Вы ввели некорректные данные, попробуйте еще раз.')
+                    }
+                })
+                $('#ru').on('click', function(){
+                    lang = 'ru'
+                })
+                $('#en').on('click', function(){
+                    lang = 'en'
+                })
+            })
+            
+        </script>
+        <div class='script'></div>
+		<style type="text/css">
+			* {
+				margin: 0;
+                font-family: Tahoma;
+			}
+			a {
+				text-decoration:none;
+			}
+            .body {
+                display:flex;
+                justify-content: center;
+            }
+			.block {
+                position: absolute;
+				width:100%;
+				height:100px;
+				display:flex;
+				align-items: center;
+				text-align: center;
+				background-color: #4c75a3;
+			}
+			#vk_bot {
+				color:white;
+				font-size: 70px;
+			}
+			.text1 {
+				font-size: 30px;
+			}
+			#token {
+                height: 30px;
+				width: 300px;
+			}
+            
+            .tog {
+                margin-top:100px;
+            }
+            .vil {
+                display: none;
+            }
+            .vil_1 {
+                display: none;
+            }
+            .block_2 {
+                position: absolute;
+                height: 470px;
+                margin-top: 220px;
+                border-bottom:1px solid black;
+                border-left:1px solid black;
+                border-right:1px solid black;
+                border-top: 0;
+                padding:10px;
+                width:329px;
+            }
+            .button {
+                background-color: #4c75a3;
+                color:white;
+            }
+            .blue {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                margin-top: 150px;
+                position: absolute;
+                height: 70px;
+                background-color: #4c75a3;
+                width: 351px;
+            }
+            .alert {
+                font-size: 15px;
+                color:white;
+            }
+            .button {
+                height:30px;
+                color:white;
+                background-color: #4c75a3;
+                border:2px solid #4c75a3;
+            }
+            .style{
+                  font-size: 13px;              
+            }
+            .input {
+                height: 30px;
+				width: 300px;
+            }
+            .input_2 {
+                height: 30px;
+                width: 280px;
+            }
+            .grey {
+                height:30px;
+                color:white;
+                border:2px solid #D2D3CF;
+                background-color: #D2D3CF;
+            }
+            .start {
+                height:30px;
+                color:white;
+                background-image: linear-gradient(to bottom, #fff, limegreen);
+                border:2px solid white;
+            }
+            .stop {
+                height:30px;
+                color:black;
+                background-image: linear-gradient(to bottom, #fff, yellow);
+                border:2px solid white;
+            }
+            .delete {
+                background-image: linear-gradient(to bottom, #fff, red);
+                height:30px;
+                color:white;
+                border: 2px solid white;
+            }
+            .Hello {
+                overflow-y: scroll; 
+                overflow-x: scroll;
+                height: 130px;
+                width:310px;
+            }
+            #Hello {
+                position: absolute;
+                margin-right: 30px;
+            }
+            .tog_1 {
+                display: none;
+            }
+            .overflow_2 {
+                overflow-y: scroll; 
+                overflow-x: scroll;
+                height: 130px;
+                width:310px;
+            }
+            .prod {
+                font-size: 15px;
+                padding:5px;
+                color:black;
+                list-style-type: none;
+            }
+            .color_2 {
+                background-color: #D1D1CC;
+            }
+            #dialog_block {
+                position: absolute;
+                overflow-y: scroll; 
+                overflow-x: scroll;
+                height: 130px;
+                width:310px;
+            }
+            .none {
+                display: none;
+            }
+            .big_index {
+                z-index: 4;
+            }
+            .color_change {
+                animation: red infinite 2s linear;
+            }
+            .inp1 {
+                border:1px solid red !important; 
+                border-radius: 5px !important;
+                transition: border 200ms ease-in-out !important;
+            }
+            .inp2 {
+                border: 2px solid red;
+                box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            }
+            .error {
+                width: 150px; 
+                height: 80px; 
+                margin-left: 26px;
+                background: #B5DDD4;
+                position: fixed;
+                border-radius: 10px;
+                }
+            .error:before {
+                content: "";
+                width: 0; 
+                height: 0;
+                position: absolute; 
+                right: 100%; 
+                top: calc(50% - 12px);
+                border-top: 12px solid transparent;
+                border-right: 24px solid #B5DDD4;
+                border-bottom: 12px solid transparent;
+            }
+			@media screen and (max-width: 281px) {
+				#vk_bot {
+					font-size: 30px;
+				}
+				.block {
+					height:70px;
+				}
+                #vk_logo {
+                    height: 70px;
+                }
+			}
+		</style>
+	</body>
+</html>
