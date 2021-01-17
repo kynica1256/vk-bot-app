@@ -21,7 +21,7 @@ def status():
             d.seek(0)
             d.close()
         with open("status.txt", "w+", encoding="utf-8") as o:
-            o.write('{"status":"false"}')
+            o.write('{"status":"true"}')
             o.close()
     else:
         pass
